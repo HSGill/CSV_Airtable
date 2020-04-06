@@ -1,30 +1,24 @@
-const fs = require('fs');
-const csv = require('csv-parser');
+var Airtable = require('airtable');
+var base = new Airtable({apiKey: 'key8rWl8yeyClgnB9'}).base('appQLsZCb4sEYy821');
 
+let itemNumber ={};
+base('Sales_Import').select({
+    // Selecting the first 3 records in Grid view:
+   
+    view: "Grid view"
+}).eachPage(function page(records, fetchNextPage) {
+    // This function (`page`) will get called for each page of records.
 
-//function to read CSV File
- async function read_csv() {
-  let pPromise = new Promise((resolve, reject) => {
-    let rows = [];
-    fs.createReadStream('./MarSales2TXT.txt')
-      .pipe(csv())
-      .on('data', (data) => {
-        rows.push(data);
-        //console.log(rows);
-      })
-      .on('end', () => {
-        // console.log('CSV file successfully processed');
-        resolve(rows);
+    records.forEach(function(record) {
+        itemNumber[record.get('Item #')] = record.id;
+        console.log(itemNumber);
+    });
 
-      }).on('error', (err) => {
-        reject(err);
-      })
-  })
+    // To fetch the next page of records, call `fetchNextPage`.
+    // If there are more records, `page` will get called again.
+    // If there are no more records, `done` will get called.
+    fetchNextPage();
 
-  let returnedValue = await Promise.resolve(pPromise);
-
-  return returnedValue;
-  //console.log(pPromise);
-}
-
-read_csv().then(resp =>console.log(resp))
+}, function done(err) {
+    if (err) { console.error(err); return; }
+});
