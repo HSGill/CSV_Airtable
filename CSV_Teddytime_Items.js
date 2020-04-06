@@ -2,18 +2,17 @@ const fs = require('fs');
 const csv = require('csv-parser');
 let Airtable = require('airtable');
 let base = new Airtable({ apiKey: 'key8rWl8yeyClgnB9' }).base('appQLsZCb4sEYy821');
-let table = base.table('Sales_Import')
+let table = base.table('Teddytime Items copy')
 
 //function to read CSV File
 async function read_csv() {
     let pPromise = new Promise((resolve, reject) => {
         let rows = [];
-        fs.createReadStream('./CSV_Airtable/file.txt')
+        fs.createReadStream('./file.txt')
             //.pipe(csv())
             .pipe(csv({ delimiter: ',', skipLines: 9 }))
             .on('data', (data) => {
                 //console.log(data)
-
                 if (Object.keys(data).length != 0) {
                     rows.push(data);
                 }
@@ -27,17 +26,15 @@ async function read_csv() {
                 reject(err);
             })
     })
-
     let returnedValue = await Promise.resolve(pPromise);
     //console.log(returnedValue);
     return returnedValue;
     //console.log(pPromise);
 }
 
-
 read_csv().then((rows) => {
     let itemNumber = {};
-    base('Sales_Import').select({
+    base('Teddytime Items copy').select({
         // Selecting the first 3 records in Grid view:
 
         view: "Grid view"
@@ -45,7 +42,7 @@ read_csv().then((rows) => {
         // This function (`page`) will get called for each page of records.
 
         records.forEach(function (record) {
-            itemNumber[record.get('Item #')] = record.id;
+            itemNumber[record.get('Our Code')] = record.id;
         });
 
         // To fetch the next page of records, call `fetchNextPage`.
@@ -86,7 +83,6 @@ read_csv().then((rows) => {
                             'API_(Recent_Month)': Number(r['Units Sold']),
                         }
                     }
-
                 });
                 try {
                     //console.log(payload)
@@ -104,7 +100,6 @@ read_csv().then((rows) => {
             // make the request
 
         }
-
         // log all complete
         console.log("All records Updated Successfully");
     })

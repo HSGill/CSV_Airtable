@@ -1,12 +1,3 @@
-TEDDYTIME
-PO Box 96231
-BALMORAL 1342
-
-Analyse Sales [Item Spreadsheet]
-
-March 2020
-3/04/2020	Page 1
-1:24:00 pm9:19 AM 6/04/2020
-Item No.,Item Name,Units Sold
+9:58 AM 6/04/2020
 
 1002A,Aspac Ideal Foam Box 60,41
