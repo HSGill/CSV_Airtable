@@ -8,7 +8,7 @@ let table = base.table('Sales_Import')
 async function read_csv() {
     let pPromise = new Promise((resolve, reject) => {
         let rows = [];
-        fs.createReadStream('./file.txt')
+        fs.createReadStream('./CSV_Airtable/file.txt')
             //.pipe(csv())
             .pipe(csv({ delimiter: ',', skipLines: 9 }))
             .on('data', (data) => {
@@ -65,34 +65,44 @@ read_csv().then((rows) => {
             // I'm taking two fields from our CSV
             // and creating new records using those
             // change the field names here to map to your CSV and Airtable Base
+            //console.log(chunk[0])
+            //console.log(itemNumber)
 
-            let payload = chunk.map((r) => {
-                //console.log(chunk)
-                //let p = monthN;
-                //console.log(r['Item No.'])
-                //console.log(itemNumber[r['Item No.']])
-                //if(Object.keys(itemNumber).length!=0){
-                //console.log(itemNumber)
-                //console.log(itemNumber[r['Item No.']]!=undefined)
+            let result = chunk.filter(obj => itemNumber[obj['Item No.']]);
+            //if(result.length=0){return 'Nothing to update'}
+            if (result.length > 0) {
+                let payload = result.map((r) => {
+                    //console.log(chunk)
+                    //let p = monthN;
+                    //console.log(r['Item No.'])
+                    //console.log(itemNumber[r['Item No.']])
+                    //if(Object.keys(itemNumber).length!=0){
+                    //console.log(itemNumber)
+                    //console.log(itemNumber[r['Item No.']]!=undefined)
 
-                return {
-                    'id': itemNumber[r['Item No.']],
-                    'fields': {
-                        'API_(Recent_Month)': Number(r['Units Sold']),
+                    return {
+                        'id': itemNumber[r['Item No.']],
+                        'fields': {
+                            'API_(Recent_Month)': Number(r['Units Sold']),
+                        }
                     }
-                }
 
-            });
+                });
+                try {
+                    //console.log(payload)
+                    // await table.update(records.forEach(record => console.log(record.get('Item #'))))
+                    table.update(payload);
+                } catch (err) {
+                    throw err;
+                }
+            }
+            else {
+                console.log("Nothing to update")
+            }
 
             //console.log(payload[0].fields,payload[1])
             // make the request
-            try {
-                console.log(payload)
-                // await table.update(records.forEach(record => console.log(record.get('Item #'))))
-                table.update(payload);
-            } catch (err) {
-                throw err;
-            }
+
         }
 
         // log all complete

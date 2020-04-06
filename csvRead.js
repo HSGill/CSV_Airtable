@@ -42,7 +42,7 @@ let monthN = month[d.getMonth() - 1];
 async function read_csv() {
   let pPromise = new Promise((resolve, reject) => {
     let rows = [];
-    fs.createReadStream('./file.txt')
+    fs.createReadStream('file.txt')
       //.pipe(csv())
       .pipe(csv({ delimiter: ',', skipLines: 9 }))
       .on('data', (data) => {
