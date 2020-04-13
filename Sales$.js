@@ -2,21 +2,21 @@ const fs = require('fs');
 const csv = require('csv-parser');
 let Airtable = require('airtable');
 let base = new Airtable({ apiKey: 'key8rWl8yeyClgnB9' }).base('appQLsZCb4sEYy821');
-let table = base.table('Sales_Import')
+let table = base.table('Sales$')
 
 //function to read CSV File
 async function read_csv() {
     let pPromise = new Promise((resolve, reject) => {
         let rows = [];
-        fs.createReadStream('./file.txt')
+        fs.createReadStream('./Analyse Sales [Spreadsheet].txt')
             //.pipe(csv())
-            .pipe(csv({ delimiter: ',', skipLines: 9 }))
+            .pipe(csv({ delimiter: ',', skipLines: 10 }))
             .on('data', (data) => {
                 //console.log(data)
                 if (Object.keys(data).length != 0) {
                     rows.push(data);
                 }
-                console.log(rows[0]);
+               // console.log(rows[0]);
             })
             .on('end', () => {
                 // console.log('CSV file successfully processed');
@@ -34,7 +34,7 @@ async function read_csv() {
 
 read_csv().then((rows) => {
     let itemNumber = {};
-    base('Sales_Import').select({
+    base('Sales$').select({
         // Selecting the first 3 records in Grid view:
 
         view: "Grid view"
@@ -42,7 +42,7 @@ read_csv().then((rows) => {
         // This function (`page`) will get called for each page of records.
 
         records.forEach(function (record) {
-            itemNumber[record.get('Item #')] = record.id;
+            itemNumber[record.get('Name')] = record.id;
         });
 
         // To fetch the next page of records, call `fetchNextPage`.
@@ -66,9 +66,10 @@ read_csv().then((rows) => {
             //console.log(itemNumber)
 
             let result = chunk.filter(obj => itemNumber[obj['Item No.']]);
+            console.log(result[0])
             //if(result.length=0){return 'Nothing to update'}
             if (result.length > 0) {
-                let payload = result.map((r) => {
+                let payyload = result.map((r) => {
                     //console.log(chunk)
                     //let p = monthN;
                     //console.log(r['Item No.'])
@@ -76,17 +77,28 @@ read_csv().then((rows) => {
                     //if(Object.keys(itemNumber).length!=0){
                     //console.log(itemNumber)
                     //console.log(itemNumber[r['Item No.']]!=undefined)
-
                     return {
                         'id': itemNumber[r['Item No.']],
                         'fields': {
-                            'API_(Recent_Month)': Number(r['Units Sold']),
+                            '$M01': 160.00,
+                           /* '$M02': Number(r['May']),
+                            '$M03': Number(r['June']),
+                            '$M04': Number(r['July']),
+                            '$M05': Number(r['August']),
+                            '$M06': Number(r['September']),
+                            '$M07': Number(r['October']),
+                            '$M08': Number(r['November']),
+                            '$M09': Number(r['December']),
+                            '$M010': Number(r['January']),
+                            '$M011': Number(r['February']),
+                            '$M012': Number(r['March']) */
                         }
                     }
                 });
                 try {
                     //console.log(payload)
                     // await table.update(records.forEach(record => console.log(record.get('Item #'))))
+                    console.log("Working")
                     table.update(payload);
                 } catch (err) {
                     throw err;
