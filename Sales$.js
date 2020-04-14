@@ -16,7 +16,7 @@ async function read_csv() {
                 if (Object.keys(data).length != 0) {
                     rows.push(data);
                 }
-               //console.log(rows);
+              // console.log(rows[0]);
             })
             .on('end', () => {
                 // console.log('CSV file successfully processed');
@@ -65,7 +65,7 @@ read_csv().then((rows) => {
 
             let result = chunk.filter(obj => itemNumber[obj['Item No.']]);
             //console.log(result[0]);
-            console.log(result[0]['April'])
+            
             //if(result.length=0){return 'Nothing to update'}
             if (result.length > 0) {
                 let payload = result.map((r) => {
@@ -76,25 +76,37 @@ read_csv().then((rows) => {
                     //if(Object.keys(itemNumber).length!=0){
                     //console.log(itemNumber)
                     //console.log(itemNumber[r['Item No.']]!=undefined)
-                    console.log(r['April'])
-                   let field1 = r['April'].replace(/\$/g, '');
-                  console.log(field1);
+                    //console.log(r['April'])
+                   let april = r['April'].replace(/[\,\$]/g, '');
+                   let may = r['May'].replace(/[\,\$]/g, '');
+                   let june = r['June'].replace(/[\,\$]/g, '');
+                   let july = r['July'].replace(/[\,\$]/g, '');
+                   let august = r['August'].replace(/[\,\$]/g, '');
+                   let september = r['September'].replace(/[\,\$]/g, '');
+                   let oct = r['October'].replace(/[\,\$]/g, '');
+                   let nov = r['November'].replace(/[\,\$]/g, '');
+                   let dec = r['December'].replace(/[\,\$]/g, '');
+                   let jan = r['January'].replace(/[\,\$]/g, '');
+                   let feb = r['February'].replace(/[\,\$]/g, '');
+                   let march = r['March'].replace(/[\,\$]/g, '');
+
+                  //console.log(field1);
                     //console.log(field1);
                     return {
                         'id': itemNumber[r['Item No.']],
                         'fields': {
-                            '$M01': Number(field1)
-                           /*'$M02': Number(r['May']),
-                            '$M03': Number(r['June']),
-                            '$M04': Number(r['July']),
-                            '$M05': Number(r['August']),
-                            '$M06': Number(r['September']),
-                            '$M07': Number(r['October']),
-                            '$M08': Number(r['November']),
-                            '$M09': Number(r['December']),
-                            '$M010': Number(r['January']),
-                            '$M011': Number(r['February']),
-                            '$M012': Number(r['March']) */
+                            '$M01': Number(april),
+                            '$M02': Number(may),
+                            '$M03': Number(june),
+                            '$M04': Number(july),
+                            '$M05': Number(august),
+                            '$M06': Number(september),
+                            '$M07': Number(oct),
+                            '$M08': Number(nov),
+                            '$M09': Number(dec),
+                            '$M010': Number(jan),
+                            '$M011': Number(feb),
+                            '$M012': Number(march) 
                         }
                     }
                 });
@@ -119,6 +131,7 @@ read_csv().then((rows) => {
         console.log("All records Updated Successfully");
     })
 })
+.catch(console.error());
 
 
 
