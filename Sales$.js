@@ -16,7 +16,7 @@ async function read_csv() {
                 if (Object.keys(data).length != 0) {
                     rows.push(data);
                 }
-               // console.log(rows[0]);
+               //console.log(rows);
             })
             .on('end', () => {
                 // console.log('CSV file successfully processed');
@@ -36,7 +36,6 @@ read_csv().then((rows) => {
     let itemNumber = {};
     base('Sales$').select({
         // Selecting the first 3 records in Grid view:
-
         view: "Grid view"
     }).eachPage(function page(records, fetchNextPage) {
         // This function (`page`) will get called for each page of records.
@@ -44,7 +43,6 @@ read_csv().then((rows) => {
         records.forEach(function (record) {
             itemNumber[record.get('Name')] = record.id;
         });
-
         // To fetch the next page of records, call `fetchNextPage`.
         // If there are more records, `page` will get called again.
         // If there are no more records, `done` will get called.
@@ -66,10 +64,11 @@ read_csv().then((rows) => {
             //console.log(itemNumber)
 
             let result = chunk.filter(obj => itemNumber[obj['Item No.']]);
-            console.log(result[0])
+            //console.log(result[0]);
+            console.log(result[0]['April'])
             //if(result.length=0){return 'Nothing to update'}
             if (result.length > 0) {
-                let payyload = result.map((r) => {
+                let payload = result.map((r) => {
                     //console.log(chunk)
                     //let p = monthN;
                     //console.log(r['Item No.'])
@@ -77,11 +76,15 @@ read_csv().then((rows) => {
                     //if(Object.keys(itemNumber).length!=0){
                     //console.log(itemNumber)
                     //console.log(itemNumber[r['Item No.']]!=undefined)
+                    console.log(r['April'])
+                   let field1 = r['April'].replace(/\$/g, '');
+                  console.log(field1);
+                    //console.log(field1);
                     return {
                         'id': itemNumber[r['Item No.']],
                         'fields': {
-                            '$M01': 160.00,
-                           /* '$M02': Number(r['May']),
+                            '$M01': Number(field1)
+                           /*'$M02': Number(r['May']),
                             '$M03': Number(r['June']),
                             '$M04': Number(r['July']),
                             '$M05': Number(r['August']),
@@ -98,7 +101,7 @@ read_csv().then((rows) => {
                 try {
                     //console.log(payload)
                     // await table.update(records.forEach(record => console.log(record.get('Item #'))))
-                    console.log("Working")
+                    //console.log("Working")
                     table.update(payload);
                 } catch (err) {
                     throw err;

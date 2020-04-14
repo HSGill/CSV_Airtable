@@ -34,6 +34,7 @@ async function read_csv() {
 
 read_csv().then((rows) => {
     let itemNumber = {};
+    //console.log(itemNumber)
     base('Sales_Import').select({
         // Selecting the first 3 records in Grid view:
 
@@ -43,7 +44,8 @@ read_csv().then((rows) => {
 
         records.forEach(function (record) {
             itemNumber[record.get('Item #')] = record.id;
-        });
+        });      
+
 
         // To fetch the next page of records, call `fetchNextPage`.
         // If there are more records, `page` will get called again.
@@ -67,6 +69,7 @@ read_csv().then((rows) => {
 
             let result = chunk.filter(obj => itemNumber[obj['Item No.']]);
             //if(result.length=0){return 'Nothing to update'}
+           // console.log('Result',result)
             if (result.length > 0) {
                 let payload = result.map((r) => {
                     //console.log(chunk)
