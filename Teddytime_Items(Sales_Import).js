@@ -21,7 +21,7 @@ async function read_csv() {
             .on('end', () => {
                 // console.log('CSV file successfully processed');
                 resolve(rows);
-         console.log(rows);
+                console.log(rows);
             }).on('error', (err) => {
                 reject(err);
             })
@@ -44,7 +44,7 @@ read_csv().then((rows) => {
         records.forEach(function (record) {
             itemNumber[record.get('Our Code')] = record.id;
 
-        });      
+        });
 
 
         // To fetch the next page of records, call `fetchNextPage`.
@@ -69,7 +69,7 @@ read_csv().then((rows) => {
             //console.log(itemNumber)
             let result = chunk.filter(obj => itemNumber[obj['Item No.']]);
             //if(result.length=0){return 'Nothing to update'}
-           console.log('Result',result[1]);
+            console.log('Result', result[1]);
             if (result.length > 0) {
                 let payload = result.map((r) => {
                     //console.log(chunk)
