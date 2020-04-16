@@ -8,19 +8,20 @@ let table = base.table('Teddytime Items')
 async function read_csv() {
     let pPromise = new Promise((resolve, reject) => {
         let rows = [];
-        fs.createReadStream('./InvHist.txt')
+        fs.createReadStream('./Analyse Inventory Summary(Items).txt')
             //.pipe(csv())
-            .pipe(csv({ delimiter: ',', skipLines: 10 }))
+            .pipe(csv({ delimiter: ',', skipLines: 8 }))
             .on('data', (data) => {
                 //console.log(data)
                 if (Object.keys(data).length != 0) {
                     rows.push(data);
                 }
+
             })
             .on('end', () => {
                 // console.log('CSV file successfully processed');
                 resolve(rows);
-                console.log(rows);
+                //console.log(rows);
             }).on('error', (err) => {
                 reject(err);
             })
@@ -30,6 +31,8 @@ async function read_csv() {
     return returnedValue;
     //console.log(pPromise);
 }
+read_csv();
+/*
 read_csv().then((rows) => {
     let itemNumber = {};
     //console.log(itemNumber)
@@ -41,15 +44,16 @@ read_csv().then((rows) => {
 
         records.forEach(function (record) {
             itemNumber[record.get('Our Code')] = record.id;
-
         });
+
+
         // To fetch the next page of records, call `fetchNextPage`.
         // If there are more records, `page` will get called again.
         // If there are no more records, `done` will get called.
         fetchNextPage();
         //   console.log(itemNumber);
 
-    }, function done(err) {
+    }, async function  done(err) {
         //console.log(itemNumber);
         // The Airtable API allows you to batch 10 records together at a time
         // so we can take chunks of ten rows, format each one, package and send
@@ -65,33 +69,36 @@ read_csv().then((rows) => {
             //console.log(itemNumber)
             let result = chunk.filter(obj => itemNumber[obj['Item No.']]);
             //if(result.length=0){return 'Nothing to update'}
-            //console.log('Result', result[1]);
+           // console.log('Result', result[1]);
             if (result.length > 0) {
                 let payload = result.map((r) => {
                     //console.log(chunk)
+                    //let p = monthN;
+                    //console.log(r['Item No.'])
+                    //console.log(itemNumber[r['Item No.']])
+                    //if(Object.keys(itemNumber).length!=0){
+                    //console.log(itemNumber)
+                    //console.log(itemNumber[r['Item No.']]!=undefined)
                     return {
                         'id': itemNumber[r['Item No.']],
                         'fields': {
-                            'IN-M01': Number(r['March']),
-                            'IN-M02': Number(r['February']),
-                            'IN-M03': Number(r['January']),
-                            'IN-M04': Number(r['December']),
-                            'IN-M05': Number(r['November']),
-                            'IN-M06': Number(r['October']),
-                            'IN-M07': Number(r['September']),
-                            'IN-M08': Number(r['August']),
-                            'IN-M09': Number(r['July']),
-                            'IN-M10': Number(r['June']),
-                            'IN-M11': Number(r['May']),
-                            'IN-M12': Number(r['April']),
+                            'On Hand': Number(r['On Hand']),
+                            'Committed': Number(r['Committed']),
+                            'On Order': Number(r['On Order'])
                         }
                     }
                 });
                 try {
                     //console.log(payload)
-                    // await table.update(records.forEach(record => console.log(record.get('Item #'))))
-                    console.log("TRY BLOCK")
-                    table.update(payload);
+                    // await keyword haslts the done function until the update(payload) is finished
+                  //  console.log("TRY BLOCK")
+                    await table.update(payload,function(err){
+                        if(err){
+                            console.log(err);
+                            return;
+                        }
+
+                    });
                 } catch (err) {
                     throw err;
                 }
@@ -110,6 +117,5 @@ read_csv().then((rows) => {
 })
 
 
-
-
+*/
 
