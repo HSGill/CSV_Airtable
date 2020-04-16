@@ -2,7 +2,7 @@ const fs = require('fs');
 const csv = require('csv-parser');
 let Airtable = require('airtable');
 let base = new Airtable({ apiKey: 'key8rWl8yeyClgnB9' }).base('appQLsZCb4sEYy821');
-let table = base.table('Sales$')
+let table = base.table('Teddytime Items')
 
 //function to read CSV File
 async function read_csv() {
@@ -16,12 +16,12 @@ async function read_csv() {
                 if (Object.keys(data).length != 0) {
                     rows.push(data);
                 }
-              // console.log(rows[0]);
+
             })
             .on('end', () => {
                 // console.log('CSV file successfully processed');
                 resolve(rows);
-
+                //console.log(rows[0]);
             }).on('error', (err) => {
                 reject(err);
             })
@@ -34,22 +34,27 @@ async function read_csv() {
 
 read_csv().then((rows) => {
     let itemNumber = {};
-    base('Sales$').select({
+    //console.log(itemNumber)
+    base('Teddytime Items').select({
         // Selecting the first 3 records in Grid view:
-        view: "Grid view"
+        view: "Full Item View"
     }).eachPage(function page(records, fetchNextPage) {
         // This function (`page`) will get called for each page of records.
 
         records.forEach(function (record) {
-            itemNumber[record.get('Name')] = record.id;
+            itemNumber[record.get('Our Code')] = record.id;
+
         });
+
+
         // To fetch the next page of records, call `fetchNextPage`.
         // If there are more records, `page` will get called again.
         // If there are no more records, `done` will get called.
         fetchNextPage();
         //   console.log(itemNumber);
 
-    }, function done(err) {
+    }, async function done(err) {
+        //console.log(itemNumber);
         // The Airtable API allows you to batch 10 records together at a time
         // so we can take chunks of ten rows, format each one, package and send
         let i, j, chunk;
@@ -62,13 +67,14 @@ read_csv().then((rows) => {
             // change the field names here to map to your CSV and Airtable Base
             //console.log(chunk[0])
             //console.log(itemNumber)
-
             let result = chunk.filter(obj => itemNumber[obj['Item No.']]);
-            //console.log(result[0]);
-            
             //if(result.length=0){return 'Nothing to update'}
+            //console.log('Result', result[1]);
+            //console.log(result);
             if (result.length > 0) {
                 let payload = result.map((r) => {
+                   // r['April'].replace(/[\,\$]/g, '');
+                   // console.log(april)
                     //console.log(chunk)
                     //let p = monthN;
                     //console.log(r['Item No.'])
@@ -76,45 +82,35 @@ read_csv().then((rows) => {
                     //if(Object.keys(itemNumber).length!=0){
                     //console.log(itemNumber)
                     //console.log(itemNumber[r['Item No.']]!=undefined)
-                    //console.log(r['April'])
-                   let april = r['April'].replace(/[\,\$]/g, '');
-                   let may = r['May'].replace(/[\,\$]/g, '');
-                   let june = r['June'].replace(/[\,\$]/g, '');
-                   let july = r['July'].replace(/[\,\$]/g, '');
-                   let august = r['August'].replace(/[\,\$]/g, '');
-                   let september = r['September'].replace(/[\,\$]/g, '');
-                   let oct = r['October'].replace(/[\,\$]/g, '');
-                   let nov = r['November'].replace(/[\,\$]/g, '');
-                   let dec = r['December'].replace(/[\,\$]/g, '');
-                   let jan = r['January'].replace(/[\,\$]/g, '');
-                   let feb = r['February'].replace(/[\,\$]/g, '');
-                   let march = r['March'].replace(/[\,\$]/g, '');
-
-                  //console.log(field1);
-                    //console.log(field1);
                     return {
                         'id': itemNumber[r['Item No.']],
                         'fields': {
-                            '$M01': Number(april),
-                            '$M02': Number(may),
-                            '$M03': Number(june),
-                            '$M04': Number(july),
-                            '$M05': Number(august),
-                            '$M06': Number(september),
-                            '$M07': Number(oct),
-                            '$M08': Number(nov),
-                            '$M09': Number(dec),
-                            '$M010': Number(jan),
-                            '$M011': Number(feb),
-                            '$M012': Number(march) 
+                            '$M01': Number(r['April'].replace(/[\,\$]/g, '')),
+                            '$M02': Number(r['May'].replace(/[\,\$]/g, '')),
+                            '$M03': Number(r['June'].replace(/[\,\$]/g, '')),
+                            '$M04': Number(r['July'].replace(/[\,\$]/g, '')),
+                            '$M05': Number(r['August'].replace(/[\,\$]/g, '')),
+                            '$M06': Number(r['September'].replace(/[\,\$]/g, '')),
+                            '$M07': Number( r['October'].replace(/[\,\$]/g, '')),
+                            '$M08': Number(r['November'].replace(/[\,\$]/g, '')),
+                            '$M09': Number(r['December'].replace(/[\,\$]/g, '')),
+                            '$M10': Number(r['January'].replace(/[\,\$]/g, '')),
+                            '$M11': Number(r['February'].replace(/[\,\$]/g, '')),
+                            '$M12': Number(r['March'].replace(/[\,\$]/g, '')) 
                         }
                     }
                 });
                 try {
                     //console.log(payload)
                     // await table.update(records.forEach(record => console.log(record.get('Item #'))))
-                    //console.log("Working")
-                    table.update(payload);
+                    console.log("TRY BLOCK")
+                   await table.update(payload,function(err){
+                        if(err){
+                            console.log(err);
+                            return;
+                        }
+
+                    });
                 } catch (err) {
                     throw err;
                 }
@@ -131,7 +127,6 @@ read_csv().then((rows) => {
         console.log("All records Updated Successfully");
     })
 })
-.catch(console.error());
 
 
 
