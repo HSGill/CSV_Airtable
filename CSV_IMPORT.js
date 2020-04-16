@@ -61,7 +61,7 @@ export default class AirTable {
             })
         })
     }
-
+    
     async deleteRecord({tableName, id, data}) {
         return new Promise((resolve, reject) => {
             this.base(tableName).destroy(id, (err, record) => {
@@ -75,7 +75,6 @@ export default class AirTable {
             })
         })
     }
-
     async getSingleRecordFrom({tableName, id}) {
         console.log(tableName, id)
         return new Promise((resolve, reject) => {

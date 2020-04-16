@@ -45,8 +45,6 @@ read_csv().then((rows) => {
             itemNumber[record.get('Our Code')] = record.id;
 
         });
-
-
         // To fetch the next page of records, call `fetchNextPage`.
         // If there are more records, `page` will get called again.
         // If there are no more records, `done` will get called.
@@ -73,12 +71,6 @@ read_csv().then((rows) => {
             if (result.length > 0) {
                 let payload = result.map((r) => {
                     //console.log(chunk)
-                    //let p = monthN;
-                    //console.log(r['Item No.'])
-                    //console.log(itemNumber[r['Item No.']])
-                    //if(Object.keys(itemNumber).length!=0){
-                    //console.log(itemNumber)
-                    //console.log(itemNumber[r['Item No.']]!=undefined)
                     return {
                         'id': itemNumber[r['Item No.']],
                         'fields': {
