@@ -8,9 +8,9 @@ let table = base.table('Teddytime Items')
 async function read_csv() {
     let pPromise = new Promise((resolve, reject) => {
         let rows = [];
-        fs.createReadStream('./file.txt')
+        fs.createReadStream('./Analyse Inventory Summary(Items).txt')
             //.pipe(csv())
-            .pipe(csv({ delimiter: ',', skipLines: 9 }))
+            .pipe(csv({ delimiter: ',', skipLines: 8 }))
             .on('data', (data) => {
                 //console.log(data)
                 if (Object.keys(data).length != 0) {
@@ -82,7 +82,9 @@ read_csv().then((rows) => {
                     return {
                         'id': itemNumber[r['Item No.']],
                         'fields': {
-                            'API_(Recent_Month)': Number(r['Units Sold']),
+                            'On Hand': Number(r['On Hand']),
+                            'Committed': Number(r['Committed']),
+                            'On Order': Number(r['On Order'])
                         }
                     }
                 });
