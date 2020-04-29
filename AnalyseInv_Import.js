@@ -1,14 +1,14 @@
 const fs = require('fs');
 const csv = require('csv-parser');
 let Airtable = require('airtable');
-let base = new Airtable({ apiKey: 'key8rWl8yeyClgnB9' }).base('appQLsZCb4sEYy821');
+let base = new Airtable({ apiKey: 'key8rWl8yeyClgnB9' }).base('appzkhYfueVNkVSXP');
 let table = base.table('Teddytime Items')
 
 //function to read CSV File
 async function read_csv() {
     let pPromise = new Promise((resolve, reject) => {
         let rows = [];
-        fs.createReadStream('./Analyse Inventory Summary(Items).txt')
+        fs.createReadStream('./Analyse Inventory Summary.txt')
             //.pipe(csv())
             .pipe(csv({ delimiter: ',', skipLines: 8 }))
             .on('data', (data) => {
@@ -21,7 +21,7 @@ async function read_csv() {
             .on('end', () => {
                 // console.log('CSV file successfully processed');
                 resolve(rows);
-                //console.log(rows);
+               // console.log(rows[0]);
             }).on('error', (err) => {
                 reject(err);
             })
@@ -42,6 +42,7 @@ read_csv().then((rows) => {
         // This function (`page`) will get called for each page of records.
 
         records.forEach(function (record) {
+            //console.log(record.get('Our Code'));
             itemNumber[record.get('Our Code')] = record.id;
 
         });
@@ -51,16 +52,17 @@ read_csv().then((rows) => {
         // If there are more records, `page` will get called again.
         // If there are no more records, `done` will get called.
         fetchNextPage();
-        //   console.log(itemNumber);
+         // console.log(itemNumber);
 
     }, async function  done(err) {
-        //console.log(itemNumber);
+      // console.log(itemNumber);
         // The Airtable API allows you to batch 10 records together at a time
         // so we can take chunks of ten rows, format each one, package and send
         let i, j, chunk;
         let size = 10;
         for (i = 0, j = rows.length; i < j; i += size) {
             chunk = rows.slice(i, i + size);
+            
             // format each record in our chunk to match 
             // I'm taking two fields from our CSV
             // and creating new records using those
@@ -68,8 +70,9 @@ read_csv().then((rows) => {
             //console.log(chunk[0])
             //console.log(itemNumber)
             let result = chunk.filter(obj => itemNumber[obj['Item No.']]);
+
             //if(result.length=0){return 'Nothing to update'}
-           // console.log('Result', result[1]);
+           //console.log('Result', result[0]);
             if (result.length > 0) {
                 let payload = result.map((r) => {
                     //console.log(chunk)
@@ -79,12 +82,13 @@ read_csv().then((rows) => {
                     //if(Object.keys(itemNumber).length!=0){
                     //console.log(itemNumber)
                     //console.log(itemNumber[r['Item No.']]!=undefined)
+                    //console.log(Number(r['On Hand'].replace(/[\,]/g, '')))
                     return {
                         'id': itemNumber[r['Item No.']],
                         'fields': {
-                            'On Hand': Number(r['On Hand']),
-                            'Committed': Number(r['Committed']),
-                            'On Order': Number(r['On Order'])
+                            'On Hand': Number(r['On Hand'].replace(/[\,]/g, '')),
+                            'Committed': Number(r['Committed'].replace(/[\,]/g, '')),
+                            'On Order': Number(r['On Order'].replace(/[\,]/g, ''))
                         }
                     }
                 });

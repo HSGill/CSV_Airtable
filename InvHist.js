@@ -20,7 +20,7 @@ async function read_csv() {
             .on('end', () => {
                 // console.log('CSV file successfully processed');
                 resolve(rows);
-                console.log(rows);
+                //console.log(rows);
             }).on('error', (err) => {
                 reject(err);
             })

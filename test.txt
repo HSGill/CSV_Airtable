@@ -1,0 +1,11 @@
+
+TEDDYTIME
+PO Box 96231
+BALMORAL 1342
+
+Analyse Inventory [Summary]
+29/04/2020,Page 1
+2:08:24 pm
+Item No.,Item Name,On Hand,Committed,On Order,Available
+
+X19G,Giraffe 20cm,"1,239",0,0,"1,239"
